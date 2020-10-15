@@ -83,7 +83,11 @@ namespace RoomINITools
         private void LoadIPState()
         {
             //update tmp file to server 2
+#if DEBUG
+            UpdateTmpFile(serverNo[0]); //using first file in the server list for debug
+#else
             UpdateTmpFile("2");
+#endif
             UpdateIpRoomDict();
             comboBox2.DataSource = new BindingSource(ipRoom, null);
             comboBox2.DisplayMember = "Value";
@@ -112,7 +116,11 @@ namespace RoomINITools
             //get server list and bind it
             comboBox5.DataSource = new BindingSource(serverNo, null);
             //get room list and bind it
+#if DEBUG
+            UpdateTmpFile(serverNo[0]); //use first server in server list for Debug purpose
+#else
             UpdateTmpFile("2");
+#endif
             //get room server dictionary for further use
             UpdateRoomServerDict();
             comboBox4.DataSource = new BindingSource(RoomServer, null);
@@ -141,7 +149,11 @@ namespace RoomINITools
 
         private void LoadServerState()
         {
+#if DEBUG
+            UpdateTmpFile(serverNo[0]); //use first server in list for DEBUG purpose
+#else
             UpdateTmpFile("2"); //update server2 is enough
+#endif
 
             using (IniTools ini = new IniTools(tmpFile))
             {
@@ -206,7 +218,11 @@ namespace RoomINITools
             //Get the select Option
             string selected = comboBox1.SelectedItem.ToString();
             selected = selected.Substring(0, selected.IndexOf('-'));
+#if DEBUG
+            string serverName = serverNo[0]; //use first server in list for DEBUG purpose 
+#else
             string serverName = "2"; //only server2 need to change
+#endif
             string section = "status";
             string key = "state";
             string value = selected;
