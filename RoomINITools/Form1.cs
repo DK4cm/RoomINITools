@@ -23,7 +23,7 @@ namespace RoomINITools
         string tmpDIR;  
         string tmpFile; //Tmp file for utf-8 no bom ini file (since winapi cannt process a bom utf-8 ini)
 #if DEBUG
-        string serverPrefix = @"C:\Users\dk4cm\source\repos\RoomINITools\RoomINITools\bin\Debug\room - {0}.ini";
+        string serverPrefix = @"D:\temp\ini\room - {0}.ini";
 #else
         string serverPrefix = @"\\192.168.1.{0}\VertrigoServ\www\VodBox\room.ini";
 #endif
@@ -74,10 +74,35 @@ namespace RoomINITools
                 case 2: //Change Server States
                     LoadServerState();
                     break;
+                case 3: //Change Screen Saver
+                    LoadScreenSaverSatus();
+                    break;
                 default:
                     break;
             }
 
+        }
+
+        private void LoadScreenSaverSatus() 
+        {
+            //update tmp file to server 2
+#if DEBUG
+            UpdateTmpFile(serverNo[0]); //using first file in the server list for debug
+#else
+            UpdateTmpFile("2");
+#endif
+            using (IniTools ini = new IniTools(tmpFile))
+            {
+                string status = ini.ReadValue("Conf", "ScreenSaver");
+                if (status.Trim().Equals("1"))  //switch on screensaver
+                {
+                    checkBox1.Checked = false;
+                }
+                else 
+                {
+                    checkBox1.Checked = true;
+                }
+            }
         }
 
         private void LoadIPState()
@@ -361,6 +386,28 @@ namespace RoomINITools
             }
             MessageBox.Show("檔案已儲存到所有Server", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
             LoadRoomServerState();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //Get the select Option
+            string selected = "1"; //Default is 1(screen saver on)
+            if (checkBox1.Checked) 
+            {
+                selected = "0";
+            }
+#if DEBUG
+            string serverName = serverNo[0]; //use first server in list for DEBUG purpose 
+#else
+            string serverName = "2"; //only server2 need to change
+#endif
+            string section = "Conf";
+            string key = "ScreenSaver";
+            string value = selected;
+            ChangeIniValue(serverName, section, key, value);
+
+            MessageBox.Show("檔案已儲存", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //LoadScreenSaverSatus();
         }
     }
 }
