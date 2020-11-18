@@ -18,6 +18,7 @@ namespace RoomINITools
             InitializeComponent();
         }
 
+        string confFile;
         string homeDIR;
         string backupDIR; //Folder for backup 
         string tmpDIR;  
@@ -48,7 +49,7 @@ namespace RoomINITools
             }
             tmpFile = Path.Combine(tmpDIR, "tmp.ini");
 
-            string confFile = Path.Combine(homeDIR, "conf.ini");
+            confFile = Path.Combine(homeDIR, "conf.ini");
             if (!File.Exists(confFile)) 
             {
                 MessageBox.Show("缺少Conf.ini", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -408,6 +409,87 @@ namespace RoomINITools
 
             MessageBox.Show("檔案已儲存", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
             //LoadScreenSaverSatus();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            LoadRoomServerState();
+            ResetDefault();
+            MessageBox.Show("已重設成預設值", "重設", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ResetDefault() 
+        {
+#if DEBUG
+            string serverName = serverNo[0]; //use first server in list for DEBUG purpose 
+#else
+            string serverName = "2"; //only server2 need to change
+#endif
+            //update the temp file
+            UpdateTmpFile(serverName);
+            //Reset Default ScreenSaver status
+            string section = "Conf";
+            string key = "ScreenSaver";
+            string value = "1";
+            using (IniTools ini = new IniTools(tmpFile))
+            {
+                //use Normal ini tool to read it
+                value = ini.ReadValue(section, key).Trim();
+            }
+            if (!value.Equals("1"))
+            {
+                ChangeIniValue(serverName, section, key, "1");
+            }
+
+            //Reset Default Status
+            section = "status";
+            key = "state";
+            value = "1";
+            using (IniTools ini = new IniTools(tmpFile))
+            {
+                //use Normal ini tool to read it
+                value = ini.ReadValue(section, key).Trim();
+            }
+            if (!value.Equals("1"))
+            {
+                ChangeIniValue(serverName, section, key, "1");
+            }
+
+            //Reset Room Server To Default
+            Dictionary<string, string> RoomServerNeedChange = new Dictionary<string, string>(); //room-server key-value pair need to change
+            section = "DefaultRoomStatus";
+            key = "";
+            value = "";
+            foreach (string room in RoomServer.Keys) 
+            {
+                //read the default and compare with exist value
+                using (IniTools ini = new IniTools(confFile))
+                {
+                    //use Normal ini tool to read it
+                    value = ini.ReadValue(section, room).Trim();
+                }
+                if (value.Equals("")) // not exist in default, no change
+                {
+                    continue;
+                }
+                if (value.Equals(RoomServer[room])) //exists amd same as now, no change
+                {
+                    continue;
+                }
+                RoomServerNeedChange.Add(room, value); // add to list for change
+            }
+            //修改要改房
+            section = "TotalSelect";
+            foreach (string room in RoomServerNeedChange.Keys) 
+            {
+                foreach (string server in serverNo)
+                {
+                    //修改新值
+                    ChangeIniValue(server, section, room, RoomServerNeedChange[room]);
+                }
+            }
+            //Update new ServerRoom
+            LoadRoomServerState();
         }
     }
 }
