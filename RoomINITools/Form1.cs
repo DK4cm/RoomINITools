@@ -21,7 +21,9 @@ namespace RoomINITools
         string confFile;
         string homeDIR;
         string backupDIR; //Folder for backup 
-        string tmpDIR;  
+        string tmpDIR;
+        int resetHour = 0;
+        int resetMinutes = 0;
         string tmpFile; //Tmp file for utf-8 no bom ini file (since winapi cannt process a bom utf-8 ini)
 #if DEBUG
         string serverPrefix = @"D:\temp\ini\room - {0}.ini";
@@ -31,6 +33,7 @@ namespace RoomINITools
         string[] serverNo;
         Dictionary<int, string> ipRoom; //ip-room key-value pair
         Dictionary<string, string> RoomServer; //room-server key-value pair
+        bool autoReset = false;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -55,9 +58,25 @@ namespace RoomINITools
                 MessageBox.Show("缺少Conf.ini", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
+
+            string timestring;
             using (IniTools ini = new IniTools(confFile)) 
             {
                 serverNo = ini.ReadValue("Servers", "list").Split(new Char[] {','}); //get the server list seperate by ','
+                string tmp = ini.ReadValue("AutoRest", "status");
+                if (tmp.Equals("1")) 
+                {
+                    autoReset = true;
+                }
+                timestring = ini.ReadValue("AutoRest", "time");
+            }
+            string[] tmpTime = timestring.Split(':');
+            resetHour = int.Parse(tmpTime[0]);
+            resetMinutes = int.Parse(tmpTime[1]);
+
+            if (autoReset) 
+            {
+                timer1.Enabled = true; //start timer;
             }
             LoadRoomServerState();  // first page is Room Server
         }
@@ -490,6 +509,16 @@ namespace RoomINITools
             }
             //Update new ServerRoom
             LoadRoomServerState();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            DateTime dt = DateTime.Now;
+
+            if ((dt.Hour == resetHour) && (dt.Minute == resetMinutes) )
+            {
+                ResetDefault();
+            }
         }
     }
 }

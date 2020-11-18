@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button5 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -48,7 +50,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.button4 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.button5 = new System.Windows.Forms.Button();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -86,6 +88,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "更改房間Server";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(257, 36);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 56);
+            this.button5.TabIndex = 5;
+            this.button5.Text = "還原預設值";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button3
             // 
@@ -160,6 +172,7 @@
             // 
             // button2
             // 
+            this.button2.Enabled = false;
             this.button2.Location = new System.Drawing.Point(103, 66);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(78, 29);
@@ -228,7 +241,6 @@
             this.comboBox1.Items.AddRange(new object[] {
             "1-正常啟動",
             "3-顯示IP",
-            "6-更改IP",
             "9-初始化",
             "10-切換橫直屏幕"});
             this.comboBox1.Location = new System.Drawing.Point(144, 18);
@@ -278,15 +290,10 @@
             this.checkBox1.Text = "停用ScreenSaver";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
-            // button5
+            // timer1
             // 
-            this.button5.Location = new System.Drawing.Point(257, 36);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 56);
-            this.button5.TabIndex = 5;
-            this.button5.Text = "還原預設值";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.timer1.Interval = 60000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Form1
             // 
@@ -333,6 +340,7 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
